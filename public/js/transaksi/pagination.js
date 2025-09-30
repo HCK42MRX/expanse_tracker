@@ -1,109 +1,152 @@
-// Menunggu hingga seluruh konten halaman HTML dimuat sebelum menjalankan script
 document.addEventListener("DOMContentLoaded", function () {
-  // ================= KONFIGURASI =================
-  const rowsPerPage = 5; // Atur berapa baris data yang ingin ditampilkan per halaman
+  // Kelas untuk mengelola pagination pada tabel transaksi
+  class TransaksiPagination {
+    constructor() {
+      // Pengaturan dasar pagination
+      this.currentPage = 1;
+      this.rowsPerPage = 5; // Ubah angka ini jika ingin menampilkan jumlah data yang berbeda
 
-  // ================= SELEKSI ELEMEN DOM =================
-  // Memilih body tabel dimana semua baris (tr) transaksi berada
-  const tableBody = document.getElementById("transaction-table-body");
-  // Memilih semua elemen baris (tr) yang ada di dalam tableBody
-  const allRows = tableBody.querySelectorAll("tr");
-  // Memilih div kosong yang akan kita isi dengan tombol pagination
-  const paginationWrapper = document.getElementById("pagination-wrapper");
-  // Menghitung jumlah total halaman yang dibutuhkan
-  const pageCount = Math.ceil(allRows.length / rowsPerPage);
-  // Menentukan halaman saat ini, defaultnya adalah halaman 1
-  let currentPage = 1;
-
-  /**
-   * Fungsi untuk membuat dan menampilkan tombol-tombol pagination.
-   */
-  function setupPagination() {
-    // Kosongkan wrapper pagination sebelum membuat yang baru
-    paginationWrapper.innerHTML = "";
-
-    // Buat elemen nav dan ul untuk membungkus tombol pagination (mengikuti struktur Bootstrap)
-    const nav = document.createElement("nav");
-    const ul = document.createElement("ul");
-    ul.classList.add("pagination");
-
-    // Buat tombol untuk setiap halaman
-    for (let i = 1; i <= pageCount; i++) {
-      const li = document.createElement("li");
-      li.classList.add("page-item");
-
-      // Tandai tombol halaman pertama sebagai 'active'
-      if (i === currentPage) {
-        li.classList.add("active");
+      // Seleksi elemen DOM yang relevan
+      this.tableBody = document.getElementById("transaction-table-body");
+      if (!this.tableBody) {
+        console.error(
+          "Elemen dengan ID 'transaction-table-body' tidak ditemukan."
+        );
+        return;
       }
 
-      const a = document.createElement("a");
-      a.classList.add("page-link");
-      a.href = "#";
-      a.innerText = i;
+      this.rows = Array.from(this.tableBody.querySelectorAll("tr"));
+      this.totalPages = Math.ceil(this.rows.length / this.rowsPerPage);
+      this.paginationWrapper = document.getElementById("pagination-wrapper");
 
-      // Tambahkan event listener untuk setiap tombol halaman
-      a.addEventListener("click", function (event) {
-        // Mencegah browser melakukan reload halaman
-        event.preventDefault();
-        // Ubah halaman saat ini ke nomor yang diklik
-        currentPage = i;
-        // Tampilkan baris yang sesuai dengan halaman baru
-        displayRowsForPage(currentPage);
-
-        // Perbarui status 'active' pada tombol pagination
-        updateActivePaginationButton();
-      });
-
-      li.appendChild(a);
-      ul.appendChild(li);
+      // Inisialisasi
+      this.init();
     }
 
-    nav.appendChild(ul);
-    // Tambahkan navigasi pagination yang sudah jadi ke dalam wrapper
-    paginationWrapper.appendChild(nav);
-  }
-
-  /**
-   * Fungsi untuk memperbarui tombol mana yang memiliki kelas 'active'.
-   */
-  function updateActivePaginationButton() {
-    // Dapatkan semua tombol pagination
-    const pageItems = paginationWrapper.querySelectorAll(".page-item");
-    pageItems.forEach((item, index) => {
-      // Hapus kelas 'active' dari semua tombol
-      item.classList.remove("active");
-      // Tambahkan kelas 'active' hanya pada tombol yang sesuai dengan halaman saat ini
-      if (index + 1 === currentPage) {
-        item.classList.add("active");
+    // Metode inisialisasi utama
+    init() {
+      if (this.rows.length > 0) {
+        this.createPaginationControls();
+        this.showPage(1);
+      } else {
+        // Sembunyikan wrapper jika tidak ada data
+        if (this.paginationWrapper)
+          this.paginationWrapper.style.display = "none";
       }
-    });
+    }
+
+    // Menampilkan baris untuk halaman tertentu
+    showPage(page) {
+      this.currentPage = page;
+      const startIndex = (this.currentPage - 1) * this.rowsPerPage;
+      const endIndex = startIndex + this.rowsPerPage;
+
+      // Sembunyikan semua baris, lalu tampilkan yang sesuai halaman ini
+      this.rows.forEach((row, index) => {
+        row.style.display =
+          index >= startIndex && index < endIndex ? "" : "none";
+      });
+
+      this.updatePaginationUI();
+    }
+
+    // Membuat elemen kontrol pagination (tombol Previous, Next, dan info halaman)
+    createPaginationControls() {
+      // Kosongkan wrapper sebelum membuat kontrol baru
+      this.paginationWrapper.innerHTML = "";
+
+      // Kontainer untuk info halaman (misal: "Menampilkan 1-5 dari 20 data")
+      const pageInfo = document.createElement("div");
+      pageInfo.className = "page-info text-muted me-auto"; // <--- UBAH JADI SEPERTI INI
+      this.pageInfo = pageInfo;
+
+      // Navigasi untuk tombol
+      const nav = document.createElement("nav");
+      const ul = document.createElement("ul");
+      ul.className = "pagination mb-0";
+
+      // Tombol "Previous"
+      const prevLi = document.createElement("li");
+      prevLi.className = "page-item";
+      prevLi.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
+
+      // Tombol "Next"
+      const nextLi = document.createElement("li");
+      nextLi.className = "page-item";
+      nextLi.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
+
+      // Tampilan nomor halaman (misal: "1 / 4")
+      const pageNumberLi = document.createElement("li");
+      pageNumberLi.className = "page-item";
+      pageNumberLi.innerHTML = `<span class="page-link" style="background-color: #f8f9fa; border-color: #dee2e6;">
+                                         <span class="current-page-display">1</span> / <span class="total-pages-display">${this.totalPages}</span>
+                                      </span>`;
+
+      // Tambahkan semua elemen ke dalam list
+      ul.appendChild(prevLi);
+      ul.appendChild(pageNumberLi);
+      ul.appendChild(nextLi);
+      nav.appendChild(ul);
+
+      // Tambahkan info dan navigasi ke wrapper utama
+      this.paginationWrapper.appendChild(this.pageInfo);
+      this.paginationWrapper.appendChild(nav);
+
+      // Simpan referensi tombol untuk event listener dan update UI
+      this.prevButton = prevLi;
+      this.nextButton = nextLi;
+      this.currentPageDisplay = this.paginationWrapper.querySelector(
+        ".current-page-display"
+      );
+
+      // Tambahkan event listener ke tombol
+      this.addEventListeners();
+    }
+
+    // Memperbarui tampilan UI pagination (status tombol dan teks info)
+    updatePaginationUI() {
+      if (!this.paginationWrapper || this.rows.length === 0) return;
+
+      // Update status tombol disabled
+      this.prevButton.classList.toggle("disabled", this.currentPage === 1);
+      this.nextButton.classList.toggle(
+        "disabled",
+        this.currentPage === this.totalPages
+      );
+
+      // Update nomor halaman yang ditampilkan
+      this.currentPageDisplay.textContent = this.currentPage;
+
+      // Update teks info halaman
+      const start = (this.currentPage - 1) * this.rowsPerPage + 1;
+      const end = Math.min(
+        this.currentPage * this.rowsPerPage,
+        this.rows.length
+      );
+      this.pageInfo.innerHTML = `Menampilkan <strong>${start}-${end}</strong> dari <strong>${this.rows.length}</strong> data`;
+    }
+
+    // Menambahkan event listener untuk tombol Previous dan Next
+    addEventListeners() {
+      this.prevButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (this.currentPage > 1) {
+          this.showPage(this.currentPage - 1);
+        }
+      });
+
+      this.nextButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (this.currentPage < this.totalPages) {
+          this.showPage(this.currentPage + 1);
+        }
+      });
+    }
   }
 
-  /**
-   * Fungsi untuk menampilkan baris data sesuai dengan halaman yang dipilih.
-   * @param {number} page - Nomor halaman yang ingin ditampilkan.
-   */
-  function displayRowsForPage(page) {
-    // Hitung indeks awal dan akhir baris yang akan ditampilkan
-    const startIndex = (page - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    // Loop melalui semua baris data
-    allRows.forEach((row, index) => {
-      // Sembunyikan semua baris terlebih dahulu
-      row.style.display = "none";
-      // Tampilkan hanya baris yang berada dalam rentang indeks untuk halaman saat ini
-      if (index >= startIndex && index < endIndex) {
-        row.style.display = ""; // Mengembalikan ke display default (biasanya 'table-row')
-      }
-    });
-  }
-
-  // ================= INISIALISASI =================
-  // Hanya jalankan pagination jika ada data di tabel
-  if (allRows.length > 0) {
-    setupPagination(); // Buat tombol pagination
-    displayRowsForPage(1); // Tampilkan data untuk halaman pertama
-  }
+  // Inisialisasi pagination setelah halaman dimuat
+  // Timeout kecil untuk memastikan semua elemen tabel sudah dirender oleh browser
+  setTimeout(() => {
+    new TransaksiPagination();
+  }, 100);
 });

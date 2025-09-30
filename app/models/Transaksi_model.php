@@ -21,4 +21,6 @@ class transaksi_model extends Model
 
         return $stmt->rowCount();
     }
+
+
 }

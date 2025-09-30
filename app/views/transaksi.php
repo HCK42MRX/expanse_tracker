@@ -86,11 +86,11 @@
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col">Tanggal</th>
-                        <th scope="col">Deskripsi</th>
-                        <th scope="col">Kategori</th>
-                        <th scope="col">Jenis</th>
-                        <th scope="col" class="text-end">Jumlah</th>
+                        <th scope="col" data-column="tanggal" style="cursor: pointer;">Tanggal</th>
+                        <th scope="col" data-column="deskripsi" style="cursor: pointer;">Deskripsi</th>
+                        <th scope="col" data-column="kategori" style="cursor: pointer;">Kategori</th>
+                        <th scope="col" data-column="jenis" style="cursor: pointer;">Jenis</th>
+                        <th scope="col" data-column="jumlah" class="text-end" style="cursor: pointer;">Jumlah</th>
                         <th scope="col" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -130,3 +130,4 @@
 <div id="pagination-wrapper" class="d-flex justify-content-end mt-3"></div>
 
 <script src="<?= BASEURL ?>/js/transaksi/pagination.js"></script>
+<script src="<?= BASEURL ?>/js/transaksi/table.js"></script>

@@ -18,24 +18,24 @@
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
                             <input type="number" class="form-control" id="jumlahPemasukan" name="jumlah"
-                                placeholder="Contoh: 1500000" required>
+                                placeholder="Contoh: 1500000">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="deskripsiPemasukan" class="form-label">Deskripsi</label>
                         <input type="text" class="form-control" id="deskripsiPemasukan" name="deskripsi"
-                            placeholder="Contoh: Gaji bulan Oktober" required>
+                            placeholder="Contoh: Gaji bulan Oktober">
                     </div>
 
                     <div class="mb-3">
                         <label for="tanggalPemasukan" class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="tanggalPemasukan" name="tanggal" required>
+                        <input type="date" class="form-control" id="tanggalPemasukan" name="tanggal">
                     </div>
 
                     <div class="mb-3">
                         <label for="kategoriPemasukan" class="form-label">Kategori</p>
-                            <select class="form-select" id="kategoriPemasukan" name="kategori_id" required>
+                            <select class="form-select" id="kategoriPemasukan" name="kategori_id">
                                 <option value="" disabled selected>-- Pilih Kategori --</option>
                                 <option selected>Semua Kategori</option>
                                 <?php foreach ($semua_kategori as $kategori): ?>

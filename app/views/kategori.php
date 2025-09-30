@@ -46,16 +46,16 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="category-table">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Nama Kategori</th>
-                                <th scope="col">Jenis</th>
+                                <th scope="col" style="width: 10%;">#</th>
+                                <th scope="col" data-column="nama" style="cursor: pointer;">Nama Kategori</th>
+                                <th scope="col" data-column="jenis" style="cursor: pointer;">Jenis</th>
                                 <th scope="col" class="text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="category-table-body">
                             <?php foreach ($kategori as $index => $k): ?>
                                 <tr>
                                     <th scope="row"><?= $index + 1 ?></th>
@@ -76,9 +76,10 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="pagination-wrapper" class="mt-3"></div>
             </div>
         </div>
     </div>
-</div>
 
-<script src="<?= BASEURL ?>/js/kategori/pagination.js"></script>
+    <script src="<?= BASEURL ?>/js/kategori/pagination.js"></script>
+    <script src="<?= BASEURL ?>/js/kategori/table.js"></script>

@@ -1,0 +1,102 @@
+# ############################################################################
+# ## File .gitignore Komprehensif untuk PHP Developer
+# ############################################################################
+
+# ----------------------------------------------------------------------------
+# Dependencies (Composer)
+# ----------------------------------------------------------------------------
+# Folder ini berisi semua library pihak ketiga. Seharusnya di-install ulang
+# menggunakan `composer install` berdasarkan file composer.lock.
+/vendor/
+composer.phar
+composer.lock
+
+# ----------------------------------------------------------------------------
+# File Lingkungan (Environment)
+# ----------------------------------------------------------------------------
+# File .env berisi kredensial dan kunci API yang sensitif. JANGAN PERNAH
+# memasukkannya ke dalam Git. Sebagai gantinya, buat file .env.example.
+.env
+.env.*
+!.env.example
+!.env.testing
+
+# ----------------------------------------------------------------------------
+# Log, Cache, dan File Sementara
+# ----------------------------------------------------------------------------
+*.log
+/logs/
+/tmp/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----------------------------------------------------------------------------
+# File IDE & Editor
+# ----------------------------------------------------------------------------
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+nbproject/
+.project
+.settings/
+
+# ----------------------------------------------------------------------------
+# File Sistem Operasi (OS)
+# ----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----------------------------------------------------------------------------
+# File Testing & Build
+# ----------------------------------------------------------------------------
+/build/
+/coverage/
+phpunit.result.cache
+.phpunit.result.cache
+clover.xml
+
+# ----------------------------------------------------------------------------
+# Alat Development Lokal
+# ----------------------------------------------------------------------------
+Homestead.yaml
+Homestead.json
+.vagrant/
+npm-debug.log
+yarn-error.log
+
+# ----------------------------------------------------------------------------
+# Framework Specific
+# ----------------------------------------------------------------------------
+
+# --- Laravel ---
+/bootstrap/cache/*.php
+/storage/app/
+/storage/framework/
+/storage/logs/
+/public/storage
+/public/hot
+node_modules/
+
+# --- Symfony ---
+/var/
+/public/build/
+.env.local.php
+
+# --- WordPress (Contoh untuk tema/plugin custom) ---
+# Abaikan file upload oleh pengguna
+/wp-content/uploads/
+# Abaikan file upgrade dan backup
+/wp-content/upgrade/
+/wp-content/backups/
+# Abaikan file konfigurasi sensitif
+wp-config.php
+
+# ----------------------------------------------------------------------------
+# Lain-lain
+# ----------------------------------------------------------------------------
+*.zip
+*.rar
+*.tar.gz

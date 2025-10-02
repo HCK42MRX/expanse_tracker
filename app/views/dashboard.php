@@ -7,7 +7,7 @@
         <div class="card border-primary h-100">
             <div class="card-body">
                 <h5 class="card-title text-primary">Saldo Saat Ini</h5>
-                <p class="card-text fs-4 fw-bold">Rp 10.500.000</p>
+                <p class="card-text fs-4 fw-bold"></p>
             </div>
         </div>
     </div>

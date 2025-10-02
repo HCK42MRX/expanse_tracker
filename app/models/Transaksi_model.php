@@ -22,5 +22,13 @@ class transaksi_model extends Model
         return $stmt->rowCount();
     }
 
+    public function getSumTransaksi()
+    {
+        $query = "SELECT SUM(jumlah) as total FROM transaksi";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
 
 }

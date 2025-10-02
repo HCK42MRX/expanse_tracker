@@ -74,7 +74,7 @@
             <div class="card-body">
                 <h6 class="card-title">Saldo Akhir</h6>
                 <p class="card-text fs-5 fw-bold">
-                    Rp <?= number_format(2000, 0, ',', '.') ?>
+                    Rp <?= number_format($data['total']['total'], 0, ',', '.') ?>
                 </p>
             </div>
         </div>

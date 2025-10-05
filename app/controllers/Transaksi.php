@@ -6,7 +6,9 @@ class Transaksi extends Controller
     public function index()
     {
         $this->view('layouts/header');
-        $data['total'] = $this->model('transaksi_model')->getSumTransaksi();
+        $data['total_saldo'] = $this->model('transaksi_model')->getSumTransaksi();
+        $data['total_pemasukan'] = $this->model('transaksi_model')->getSumTransaksi(null, null, "pemasukan");
+        $data['total_pengeluaran'] = $this->model('transaksi_model')->getSumTransaksi(null, null, "pengeluaran");
         $data['transaksi'] = $this->model('transaksi_model')->getAllTransaksi();
         $data['semua_kategori'] = $this->model('kategori_model')->getAllKategori();
         $this->view('transaksi', $data);
@@ -28,6 +30,7 @@ class Transaksi extends Controller
         $parameter = explode('/', $_GET['url'])[2];
         if ($validator->validate($_POST, $rules)) {
             $clean_data = $validator->getSanitizedData();
+            $clean_data['tanggal'] = $clean_data['tanggal'] . ' ' . date('H:i:s');
 
             if (isset($parameter) && $parameter === 'pemasukan') {
                 $clean_data['jumlah'] = abs($clean_data['jumlah']);
@@ -38,10 +41,17 @@ class Transaksi extends Controller
                 }
             } else if (isset($parameter) && $parameter === 'pengeluaran') {
                 $clean_data['jumlah'] = -abs($clean_data['jumlah']);
-                if ($this->model('transaksi_model')->postNewTransaksi($clean_data) > 0) {
-                    Flasher::setFlash('Berhasil', 'menambahkan pengeluaran', 'success');
+                if ((int) $this->model('transaksi_model')->getSumTransaksi(null, null, "pemasukan")['total'] < abs($clean_data['jumlah'])) {
+                    Flasher::setFlash('Gagal', 'pengeluaran lebih banyak dari pemasukan', 'danger');
                     header('location: ' . BASEURL . '/transaksi');
                     exit;
+                } else {
+
+                    if ($this->model('transaksi_model')->postNewTransaksi($clean_data) > 0) {
+                        Flasher::setFlash('Berhasil', 'menambahkan pengeluaran', 'success');
+                        header('location: ' . BASEURL . '/transaksi');
+                        exit;
+                    }
                 }
             } else {
                 Flasher::setFlash('Data input tidak sesuai', 'input salah', 'danger');

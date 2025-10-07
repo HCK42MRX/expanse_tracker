@@ -43,6 +43,11 @@ class Validator
 
             // 2. Proses validasi dan sanitasi berdasarkan aturan lain
             foreach ($rule as $constraint) {
+                // Jika sudah ada error untuk field ini, hentikan validasi aturan selanjutnya
+                if (isset($this->errors[$field])) {
+                    break;
+                }
+
                 switch ($constraint) {
                     case 'numeric':
                         if (!is_numeric($clean_value)) {
@@ -52,6 +57,15 @@ class Validator
                             $clean_value = filter_var($clean_value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
                         }
                         break;
+
+                    // --- PENAMBAHAN ATURAN BARU DI SINI ---
+                    case 'not_zero':
+                        // Pastikan nilainya numerik sebelum membandingkan
+                        if (is_numeric($clean_value) && (float) $clean_value === 0.0) {
+                            $this->errors[$field] = "Field {$field} tidak boleh bernilai nol.";
+                        }
+                        break;
+                    // --- AKHIR PENAMBAHAN ---
 
                     case 'text':
                         $clean_value = htmlspecialchars($clean_value, ENT_QUOTES, 'UTF-8');
@@ -76,8 +90,10 @@ class Validator
                 }
             }
 
-            // Simpan data yang sudah bersih
-            $this->sanitized_data[$field] = $clean_value;
+            // Simpan data yang sudah bersih jika tidak ada error
+            if (!isset($this->errors[$field])) {
+                $this->sanitized_data[$field] = $clean_value;
+            }
         }
 
         return empty($this->errors);

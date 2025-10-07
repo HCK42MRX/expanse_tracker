@@ -4,18 +4,12 @@
 
 <div class="row">
     <div class="col-md-4 mb-4">
-        <div class="card border-primary h-100">
-            <div class="card-body">
-                <h5 class="card-title text-primary">Saldo Saat Ini</h5>
-                <p class="card-text fs-4 fw-bold"></p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
         <div class="card border-success h-100">
             <div class="card-body">
                 <h5 class="card-title text-success">Pemasukan Bulan Ini</h5>
-                <p class="card-text fs-4 fw-bold">Rp 15.000.000</p>
+                <p class="card-text fs-4 fw-bold">
+                    + Rp <?= number_format($data['totals']['total_pemasukan'], 0, ',', '.') ?>
+                </p>
             </div>
         </div>
     </div>
@@ -23,7 +17,19 @@
         <div class="card border-danger h-100">
             <div class="card-body">
                 <h5 class="card-title text-danger">Pengeluaran Bulan Ini</h5>
-                <p class="card-text fs-4 fw-bold">Rp 4.500.000</p>
+                <p class="card-text fs-4 fw-bold">
+                    - Rp <?= number_format(abs($data['totals']['total_pengeluaran']), 0, ',', '.') ?>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card border-primary h-100">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Saldo Saat Ini</h5>
+                <p class="card-text fs-4 fw-bold">Rp
+                    <?= number_format($data['totals']['total_saldo'], 0, ',', '.') ?>
+                </p>
             </div>
         </div>
     </div>

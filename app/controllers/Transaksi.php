@@ -2,18 +2,20 @@
 
 class Transaksi extends Controller
 {
-    public function index($startDate = null, $endDate = null, $categoryFilter = null, $typeFilter = null)
+    public function index()
     {
         $transaksiModel = $this->model('transaksi_model');
         $kategoriModel = $this->model('kategori_model');
 
+
         // Mengambil filter dari query string (misal: ?startDate=...)
         $filters = [
-            'tanggal_mulai' => $startDate === 'null' ? null : (string) $startDate,
-            'tanggal_akhir' => $endDate === 'null' ? null : (string) $endDate,
-            'kategori_id' => $categoryFilter === 'null' ? null : (string) $categoryFilter,
-            'jenis' => $typeFilter === 'null' ? null : (string) $typeFilter,
+            'tanggal_mulai' => $_POST['startDate'] ?? null,
+            'tanggal_akhir' => $_POST['endDate'] ?? null,
+            'kategori_id' => $_POST['categoryFilter'] ?? null,
+            'jenis' => $_POST['typeFilter'] ?? null,
         ];
+
 
         $filters = array_filter($filters, fn($value) => $value !== '' && $value !== null);
 

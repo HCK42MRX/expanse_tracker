@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     constructor() {
       // Pengaturan dasar pagination
       this.currentPage = 1;
-      this.rowsPerPage = 5; // Ubah angka ini jika ingin menampilkan jumlah data yang berbeda
+      this.rowsPerPage = 10; // Ubah angka ini jika ingin menampilkan jumlah data yang berbeda
 
       // Seleksi elemen DOM yang relevan
       this.tableBody = document.getElementById("transaction-table-body");

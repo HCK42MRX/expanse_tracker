@@ -1,3 +1,11 @@
+<?php
+// Ambil nilai filter dari POST, beri nilai default '' jika tidak ada
+$filterStartDate = $_POST['startDate'] ?? '';
+$filterEndDate = $_POST['endDate'] ?? '';
+$filterCategory = $_POST['categoryFilter'] ?? '';
+$filterType = $_POST['typeFilter'] ?? '';
+?>
+
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <h1 class="h2 mb-0">Riwayat Transaksi</h1>
     <div class="d-flex gap-2">
@@ -16,34 +24,45 @@
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">Filter Transaksi</h5>
-        <form class="row g-3 align-items-end filter-form">
+
+        <form class="row g-3 align-items-end filter-form" method="POST" action="<?= BASEURL ?>/transaksi">
+
             <div class="col-12 col-sm-6 col-lg-3">
                 <label for="startDate" class="form-label">Tanggal Mulai</label>
-                <input type="date" class="form-control" id="startDate">
+                <input type="date" class="form-control" id="startDate" name="startDate"
+                    value="<?= htmlspecialchars($filterStartDate) ?>">
             </div>
+
             <div class="col-12 col-sm-6 col-lg-3">
                 <label for="endDate" class="form-label">Tanggal Akhir</label>
-                <input type="date" class="form-control" id="endDate">
+                <input type="date" class="form-control" id="endDate" name="endDate"
+                    value="<?= htmlspecialchars($filterEndDate) ?>">
             </div>
+
             <div class="col-12 col-sm-6 col-lg-2">
                 <label for="categoryFilter" class="form-label">Kategori</label>
-                <select class="form-select" id="categoryFilter">
-                    <option selected>Semua</option>
+                <select class="form-select" id="categoryFilter" name="categoryFilter">
+                    <option value="">Semua</option>
                     <?php foreach ($semua_kategori as $kategori): ?>
-                        <option value="<?= $kategori['id'] ?>"><?= $kategori['nama_kategori'] ?></option>
+                        <option value="<?= $kategori['id'] ?>" <?= ($kategori['id'] == $filterCategory) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($kategori['nama_kategori']) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
+
             <div class="col-12 col-sm-6 col-lg-2">
                 <label for="typeFilter" class="form-label">Jenis</label>
-                <select class="form-select" id="typeFilter">
-                    <option selected>Semua</option>
-                    <option value="1">Pemasukan</option>
-                    <option value="0">Pengeluaran</option>
+                <select class="form-select" id="typeFilter" name="typeFilter">
+                    <option value="" <?= ($filterType == '') ? 'selected' : '' ?>>Semua</option>
+                    <option value="1" <?= ($filterType == '1') ? 'selected' : '' ?>>Pemasukan</option>
+                    <option value="0" <?= ($filterType === '0') ? 'selected' : '' ?>>Pengeluaran</option>
                 </select>
             </div>
+
             <div class="col-12 col-lg-auto">
-                <button type="submit" class="btn btn-primary w-100"> <i class="bi bi-funnel-fill"></i> Terapkan
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel-fill"></i> Terapkan
                 </button>
             </div>
         </form>
@@ -133,41 +152,5 @@
 </div>
 
 <div id="pagination-wrapper" class="d-flex justify-content-end mt-3"></div>
-
-<script>
-    // Tunggu sampai seluruh halaman dimuat
-    document.addEventListener('DOMContentLoaded', function () {
-        // Cari form filter di dalam halaman
-        const filterForm = document.querySelector('.filter-form');
-
-        // Tambahkan event listener untuk event 'submit'
-        filterForm.addEventListener('submit', function (event) {
-            // 1. Mencegah form mengirim data (mencegah reload halaman)
-            event.preventDefault();
-            console.log(filterForm);
-
-            // 2. Ambil nilai dari setiap input
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const category = document.getElementById('categoryFilter').value;
-            const type = document.getElementById('typeFilter').value;
-
-            // 3. Siapkan placeholder jika input kosong atau 'Semua'
-            // Ini penting agar struktur URL tidak rusak
-            const startDateParam = startDate || 'null';
-            const endDateParam = endDate || 'null';
-            const categoryParam = (category === 'Semua' || category === '') ? 'null' : category;
-            const typeParam = (type === 'Semua' || type === '') ? 'null' : type;
-
-            // 4. Bangun URL baru sesuai format yang diinginkan
-            // Ganti BASEURL dengan variabel PHP Anda
-            const baseUrl = "<?= BASEURL ?>";
-            const newUrl = `${baseUrl}/transaksi/index/${startDateParam}/${endDateParam}/${categoryParam}/${typeParam}`;
-
-            // 5. Arahkan browser ke URL yang baru
-            window.location.href = newUrl;
-        });
-    });
-</script>
 <script src="<?= BASEURL ?>/js/transaksi/pagination.js"></script>
-<script src="<?= BASEURL ?>/js/transaksi/table.js"></script>\
+<script src="<?= BASEURL ?>/js/transaksi/table.js"></script>

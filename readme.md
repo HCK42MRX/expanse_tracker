@@ -1,6 +1,6 @@
 # Expanse Tracker
 
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D7.4-8892BF.svg)](https://php.net/)
+[![PHP Version](https://img.shields.io/badge/php-8.2-8892BF.svg)](https://php.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Expanse Tracker** adalah aplikasi web yang dirancang untuk membantu pengguna melacak pemasukan dan pengeluaran harian. Dibangun dengan PHP native dan menerapkan pola arsitektur **Model-View-Controller (MVC)**, aplikasi ini memisahkan logika bisnis dari antarmuka pengguna, membuatnya lebih terstruktur, mudah dikelola, dan skalabel.

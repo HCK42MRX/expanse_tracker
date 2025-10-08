@@ -83,7 +83,7 @@ class transaksi_model extends Model
         $totals = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // [PERBAIKAN 3] Logika perhitungan saldo yang benar.
-        $totals['total_saldo'] = $totals['total_pemasukan'] - $totals['total_pengeluaran'];
+        $totals['total_saldo'] = $totals['total_pemasukan'] - abs($totals['total_pengeluaran']);
 
         return $totals;
     }

@@ -12,8 +12,6 @@ class Transaksi extends Controller
         $filters = [
             'tanggal_mulai' => $_POST['startDate'] ?? null,
             'tanggal_akhir' => $_POST['endDate'] ?? null,
-            'kategori_id' => $_POST['categoryFilter'] ?? null,
-            'jenis' => $_POST['typeFilter'] ?? null,
         ];
 
 
@@ -49,7 +47,6 @@ class Transaksi extends Controller
             'jumlah' => ['required', 'numeric', 'not_zero'],
             'deskripsi' => ['required', 'text'],
             'tanggal' => ['required', 'date'],
-            'kategori_id' => ['required', 'in:' . implode(',', $validCategoryIds)],
         ];
 
         // Kita tidak perlu lagi mem-parsing $_GET['url'] di sini!

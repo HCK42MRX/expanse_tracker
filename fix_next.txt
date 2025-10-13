@@ -1,0 +1,1 @@
+perbaikan fitur filter agar ketika kategori pemasukan or pengeluaran, jenisnya ga bisa di jadiin sebaliknya misal kalo kategorinya itu termasuk pemasukan, lalu jenisnya pengeluaran itu ga bisa

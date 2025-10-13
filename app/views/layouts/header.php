@@ -26,13 +26,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= BASEURL ?>/Dashboard">Dashboard</a>
+                        <a class="nav-link" href="<?= BASEURL ?>/dashboard">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= BASEURL ?>/Transaksi">Transaksi</a>
+                        <a class="nav-link" href="<?= BASEURL ?>/transaksi">Transaksi</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= BASEURL ?>/Kategori">Kategori</a>
+                        <a class="nav-link" href="<?= BASEURL ?>/kategori">Kategori</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">

@@ -6,6 +6,22 @@ $filterCategory = $_POST['categoryFilter'] ?? '';
 $filterType = $_POST['typeFilter'] ?? '';
 ?>
 
+<style>
+    /* Gaya untuk panah yang tidak aktif (default) */
+    .sort-icon {
+        margin-left: 5px;
+        color: #a7a7a7;
+        /* Warna abu-abu redup */
+        transition: color 0.2s;
+    }
+
+    /* Gaya untuk panah yang aktif (kolom yang sedang di-sort) */
+    .sort-icon.active {
+        color: #ffffff;
+        /* Warna putih cerah agar menonjol */
+    }
+</style>
+
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <h1 class="h2 mb-0">Riwayat Transaksi</h1>
     <div class="d-flex gap-2">
@@ -24,47 +40,32 @@ $filterType = $_POST['typeFilter'] ?? '';
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">Filter Transaksi</h5>
-
         <form class="row g-3 align-items-end filter-form" method="POST" action="<?= BASEURL ?>/transaksi">
 
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="col-12 col-sm-6 col-lg-5">
                 <label for="startDate" class="form-label">Tanggal Mulai</label>
                 <input type="date" class="form-control" id="startDate" name="startDate"
                     value="<?= htmlspecialchars($filterStartDate) ?>">
             </div>
 
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="col-12 col-sm-6 col-lg-5">
                 <label for="endDate" class="form-label">Tanggal Akhir</label>
                 <input type="date" class="form-control" id="endDate" name="endDate"
                     value="<?= htmlspecialchars($filterEndDate) ?>">
             </div>
 
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="categoryFilter" class="form-label">Kategori</label>
-                <select class="form-select" id="categoryFilter" name="categoryFilter">
-                    <option value="">Semua</option>
-                    <?php foreach ($semua_kategori as $kategori): ?>
-                        <option value="<?= $kategori['id'] ?>" <?= ($kategori['id'] == $filterCategory) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($kategori['nama_kategori']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+            <div class="col-12 col-lg-2">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100" title="Terapkan Filter">
+                        <i class="bi bi-funnel-fill"></i>
+                        <span class="d-none d-lg-inline"> Terapkan</span>
+                    </button>
+                    <a href="<?= BASEURL ?>/transaksi" class="btn btn-outline-secondary" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
             </div>
 
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="typeFilter" class="form-label">Jenis</label>
-                <select class="form-select" id="typeFilter" name="typeFilter">
-                    <option value="" <?= ($filterType == '') ? 'selected' : '' ?>>Semua</option>
-                    <option value="1" <?= ($filterType == '1') ? 'selected' : '' ?>>Pemasukan</option>
-                    <option value="0" <?= ($filterType === '0') ? 'selected' : '' ?>>Pengeluaran</option>
-                </select>
-            </div>
-
-            <div class="col-12 col-lg-auto">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-funnel-fill"></i> Terapkan
-                </button>
-            </div>
         </form>
     </div>
 </div>
@@ -104,6 +105,14 @@ $filterType = $_POST['typeFilter'] ?? '';
 
 <div class="card">
     <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+            <div class="col-12 col-md-4 col-lg-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="search" id="searchInput" class="form-control" placeholder="Cari transaksi...">
+                </div>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark">

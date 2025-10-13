@@ -30,11 +30,6 @@ class transaksi_model extends Model
             $params[':kategori_id'] = $filters['kategori_id'];
         }
 
-        if (isset($filters['jenis']) && $filters['jenis'] !== '') {
-            $conditions[] = "k.jenis = :jenis";
-            $params[':jenis'] = $filters['jenis'];
-        }
-
         $whereClause = !empty($conditions) ? " WHERE " . implode(' AND ', $conditions) : "";
 
         return [

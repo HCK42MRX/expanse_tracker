@@ -1,36 +1,87 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Kelas ini khusus untuk mengelola sorting tabel
-  class TableSorter {
+  class TableManager {
     constructor() {
       this.table = document.querySelector(".table");
       if (!this.table) return;
 
       this.tableBody = this.table.querySelector("tbody");
       this.headers = this.table.querySelectorAll("thead th[data-column]");
-      this.currentSort = { column: null, direction: "asc" };
+      this.searchInput = document.getElementById("searchInput");
+
+      // Simpan semua baris asli sekali saja untuk performa
+      this.originalRows = Array.from(this.tableBody.querySelectorAll("tr"));
+
+      this.currentSort = { column: null, direction: "desc" };
 
       this.init();
     }
 
     init() {
+      // Tampilkan panah default saat halaman dimuat
+      this.updateHeaderUI();
+
+      // Listener untuk sorting
       this.headers.forEach((header) => {
         header.addEventListener("click", () => {
           const column = header.dataset.column;
-          const direction =
+          let direction = "desc";
+
+          if (
             this.currentSort.column === column &&
-            this.currentSort.direction === "asc"
-              ? "desc"
-              : "asc";
-          this.sortRows(column, direction);
+            this.currentSort.direction === "desc"
+          ) {
+            direction = "asc";
+          }
+          this.currentSort = { column, direction };
+          this.updateTableDisplay();
         });
+      });
+
+      // Listener untuk search
+      this.searchInput.addEventListener("input", () => {
+        this.updateTableDisplay();
       });
     }
 
-    sortRows(column, direction) {
-      this.currentSort = { column, direction };
-      const allRows = Array.from(this.tableBody.querySelectorAll("tr"));
+    updateTableDisplay() {
+      // 1. Dapatkan kata kunci pencarian
+      const searchTerm = this.searchInput.value.toLowerCase().trim();
 
-      allRows.sort((rowA, rowB) => {
+      // 2. Filter baris berdasarkan pencarian
+      const filteredRows = this.originalRows.filter((row) => {
+        const rowText = row.textContent.toLowerCase();
+        return rowText.includes(searchTerm);
+      });
+
+      // 3. Urutkan baris yang sudah difilter
+      const sortedRows = this.sortRows(filteredRows);
+
+      // 4. Tampilkan baris yang sudah difilter dan diurutkan
+      this.tableBody.innerHTML = ""; // Kosongkan tabel
+      if (sortedRows.length === 0) {
+        this.showNoResultsMessage();
+      } else {
+        sortedRows.forEach((row) => this.tableBody.appendChild(row));
+      }
+
+      // 5. Perbarui UI header (panah)
+      this.updateHeaderUI();
+
+      // 6. Beri tahu pagination bahwa isi tabel telah berubah
+      this.tableBody.dispatchEvent(
+        new CustomEvent("tableSorted", { bubbles: true })
+      );
+    }
+
+    sortRows(rows) {
+      // Jika tidak ada kolom yang di-sort, kembalikan baris apa adanya
+      if (!this.currentSort.column) {
+        return rows;
+      }
+
+      const { column, direction } = this.currentSort;
+
+      return rows.sort((rowA, rowB) => {
         const valA = this.getCellValue(rowA, column);
         const valB = this.getCellValue(rowB, column);
 
@@ -38,18 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (valA > valB) return direction === "asc" ? 1 : -1;
         return 0;
       });
-
-      // Susun ulang baris di dalam tbody
-      this.tableBody.innerHTML = "";
-      allRows.forEach((row) => this.tableBody.appendChild(row));
-
-      this.updateHeaderUI();
-
-      // PENTING: Kirim "sinyal" bahwa tabel telah diurutkan
-      // Event ini akan didengarkan oleh pagination.js
-      this.tableBody.dispatchEvent(
-        new CustomEvent("tableSorted", { bubbles: true })
-      );
     }
 
     getCellValue(row, column) {
@@ -64,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
         case "tanggal":
           return new Date(text);
         case "jumlah":
-          return parseFloat(text.replace(/[+Rp.\s]/g, ""));
+          return parseFloat(text.replace(/[+Rp.,\s]/g, ""));
         default:
           return text.toLowerCase();
       }
@@ -72,19 +111,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateHeaderUI() {
       this.headers.forEach((header) => {
-        const icon = header.querySelector(".sort-icon");
-        if (icon) icon.remove();
+        const existingIcon = header.querySelector(".sort-icon");
+        if (existingIcon) existingIcon.remove();
+
+        const newIcon = document.createElement("span");
+        newIcon.className = "sort-icon";
 
         if (header.dataset.column === this.currentSort.column) {
-          const newIcon = document.createElement("span");
-          newIcon.className = "sort-icon";
           newIcon.innerHTML =
-            this.currentSort.direction === "asc" ? " &utrif;" : " &dtrif;";
-          header.appendChild(newIcon);
+            this.currentSort.direction === "desc" ? " &dtrif;" : " &utrif;";
+          newIcon.classList.add("active");
+        } else {
+          newIcon.innerHTML = " &dtrif;";
+          newIcon.classList.remove("active");
         }
+        header.appendChild(newIcon);
       });
+    }
+
+    showNoResultsMessage() {
+      const columnCount = this.table.querySelector("thead tr").children.length;
+      this.tableBody.innerHTML = `
+            <tr>
+                <td colspan="${columnCount}" class="text-center text-muted py-4">
+                    Tidak ada data yang cocok dengan pencarian Anda.
+                </td>
+            </tr>
+        `;
     }
   }
 
-  new TableSorter();
+  new TableManager();
 });

@@ -12,14 +12,31 @@ class Kategori extends Controller
 
     public function tambah()
     {
-        if ($this->model('Kategori_model')->postNewKategori($_POST) > 0) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST)) {
+            header('location: ' . BASEURL . '/kategori');
+            exit;
+        }
+
+        $kategoriModel = $this->model('kategori_model');
+        $validator = new Validator();
+
+        $rules = [
+            'nama_kategori' => ['required', 'text'],
+            'jenis' => ['required', 'in:1,0'],
+        ];
+
+        if (!$validator->validate($_POST, $rules)) {
+            $this->handleValidationErrors($validator->getErrors());
+            $this->redirectback('kategori');
+        }
+
+        $clean_data = $validator->getSanitizedData();
+
+        if ($kategoriModel->postNewKategori($clean_data) > 0) {
             Flasher::setFlash('berhasil', 'ditambahkan', 'success');
             header('location: ' . BASEURL . '/kategori');
-            exit;
-        } else {
-            Flasher::setFlash('gagal', 'gagal ditambahkan', 'danger');
-            header('location: ' . BASEURL . '/kategori');
-            exit;
+            $this->redirectback('kategori');
+
         }
     }
 }

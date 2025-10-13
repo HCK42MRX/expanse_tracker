@@ -25,11 +25,6 @@ class transaksi_model extends Model
             $params[':tanggal_akhir'] = $filters['tanggal_akhir'] . ' 23:59:59';
         }
 
-        if (!empty($filters['kategori_id'])) {
-            $conditions[] = "t.kategori_id = :kategori_id";
-            $params[':kategori_id'] = $filters['kategori_id'];
-        }
-
         $whereClause = !empty($conditions) ? " WHERE " . implode(' AND ', $conditions) : "";
 
         return [
@@ -92,7 +87,7 @@ class transaksi_model extends Model
                   VALUES (:kategori_id, :deskripsi, :tanggal_transaksi, :jumlah)";
 
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':kategori_id', $data['kategori_id']);
+        $stmt->bindValue(':kategori_id', $data['kategori']);
         $stmt->bindValue(':deskripsi', $data['deskripsi']);
         // [SARAN 4] Pastikan key 'tanggal' sesuai dengan nama form Anda.
         // Jika memungkinkan, samakan dengan nama kolom: $data['tanggal_transaksi']

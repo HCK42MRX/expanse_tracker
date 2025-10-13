@@ -1,24 +1,17 @@
 <?php
-// Ambil nilai filter dari POST, beri nilai default '' jika tidak ada
 $filterStartDate = $_POST['startDate'] ?? '';
 $filterEndDate = $_POST['endDate'] ?? '';
-$filterCategory = $_POST['categoryFilter'] ?? '';
-$filterType = $_POST['typeFilter'] ?? '';
 ?>
 
 <style>
-    /* Gaya untuk panah yang tidak aktif (default) */
     .sort-icon {
         margin-left: 5px;
         color: #a7a7a7;
-        /* Warna abu-abu redup */
         transition: color 0.2s;
     }
 
-    /* Gaya untuk panah yang aktif (kolom yang sedang di-sort) */
     .sort-icon.active {
         color: #ffffff;
-        /* Warna putih cerah agar menonjol */
     }
 </style>
 

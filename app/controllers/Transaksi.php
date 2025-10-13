@@ -7,18 +7,19 @@ class Transaksi extends Controller
         $transaksiModel = $this->model('transaksi_model');
         $kategoriModel = $this->model('kategori_model');
 
-
-        // Mengambil filter dari query string (misal: ?startDate=...)
+        // 1. Menggunakan $_POST untuk filter
         $filters = [
             'tanggal_mulai' => $_POST['startDate'] ?? null,
             'tanggal_akhir' => $_POST['endDate'] ?? null,
         ];
 
-
+        // Membersihkan filter dari nilai kosong
         $filters = array_filter($filters, fn($value) => $value !== '' && $value !== null);
 
         $data['transaksi'] = $transaksiModel->getFilteredTransaksi($filters);
         $data['totals'] = $transaksiModel->getTransactionTotals($filters);
+        // Karena filter kategori/jenis sudah dihapus dari view, ini mungkin tidak perlu lagi.
+        // Jika masih diperlukan untuk modal, biarkan.
         $data['semua_kategori'] = $kategoriModel->getAllKategori();
 
         $this->view('layouts/header', $data);
@@ -26,16 +27,10 @@ class Transaksi extends Controller
         $this->view('layouts/footer');
     }
 
-    /**
-     * PENYESUAIAN DI SINI:
-     * Method ini sekarang menerima $parameter langsung dari router Anda.
-     * @param string|null $parameter Berisi 'pemasukan' atau 'pengeluaran' dari URL.
-     */
     public function tambah_transaksi($parameter = null)
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST)) {
-            header('location: ' . BASEURL . '/transaksi');
-            exit;
+            $this->redirectBack('transaksi');
         }
 
         $transaksiModel = $this->model('transaksi_model');
@@ -47,46 +42,61 @@ class Transaksi extends Controller
             'jumlah' => ['required', 'numeric', 'not_zero'],
             'deskripsi' => ['required', 'text'],
             'tanggal' => ['required', 'date'],
+            'kategori' => ['required', 'in:' . implode(',', $validCategoryIds)],
         ];
 
-        // Kita tidak perlu lagi mem-parsing $_GET['url'] di sini!
-        // Cukup gunakan variabel $parameter yang sudah disediakan router.
-
-        if ($validator->validate($_POST, $rules)) {
-            $clean_data = $validator->getSanitizedData();
-            $clean_data['tanggal'] = $clean_data['tanggal'] . ' ' . date('H:i:s');
-
-            if ($parameter === 'pemasukan') {
-                $clean_data['jumlah'] = abs($clean_data['jumlah']);
-                if ($transaksiModel->postNewTransaksi($clean_data) > 0) {
-                    Flasher::setFlash('Berhasil', 'menambahkan pemasukan.', 'success');
-                }
-            } elseif ($parameter === 'pengeluaran') {
-                $totals = $transaksiModel->getTransactionTotals();
-                $jumlahPengeluaran = abs($clean_data['jumlah']);
-
-                if ($totals['total_saldo'] < $jumlahPengeluaran) {
-                    Flasher::setFlash('Gagal', 'Saldo tidak mencukupi untuk pengeluaran ini.', 'danger');
-                } else {
-                    $clean_data['jumlah'] = -$jumlahPengeluaran;
-                    if ($transaksiModel->postNewTransaksi($clean_data) > 0) {
-                        Flasher::setFlash('Berhasil', 'menambahkan pengeluaran.', 'success');
-                    }
-                }
-            } else {
-                Flasher::setFlash('Gagal', 'Jenis transaksi tidak valid.', 'danger');
-            }
-        } else {
-            $errors = $validator->getErrors();
-            $error_html = '<ul>';
-            foreach ($errors as $error) {
-                $error_html .= '<li>' . htmlspecialchars($error) . '</li>';
-            }
-            $error_html .= '</ul>';
-            Flasher::setFlash('Validasi Gagal', $error_html, 'danger');
+        if (!$validator->validate($_POST, $rules)) {
+            $this->handleValidationErrors($validator->getErrors());
+            $this->redirectBack('transaksi');
         }
 
-        header('location: ' . BASEURL . '/transaksi');
-        exit;
+        $clean_data = $validator->getSanitizedData();
+        // Pertimbangkan: Apakah selalu ingin menambahkan waktu saat ini?
+        // Mungkin lebih baik membiarkan user memilih waktu atau hanya menyimpan tanggal.
+        $clean_data['tanggal'] = $clean_data['tanggal'] . ' ' . date('H:i:s');
+
+        if ($parameter === 'pemasukan') {
+            $this->handlePemasukan($transaksiModel, $clean_data);
+        } elseif ($parameter === 'pengeluaran') {
+            $this->handlePengeluaran($transaksiModel, $clean_data);
+        } else {
+            Flasher::setFlash('Gagal', 'Jenis transaksi tidak valid.', 'danger');
+        }
+
+        $this->redirectBack('transaksi');
+    }
+
+    /**
+     * Menangani logika penambahan pemasukan.
+     */
+    private function handlePemasukan($transaksiModel, $data)
+    {
+        $data['jumlah'] = abs($data['jumlah']);
+        if ($transaksiModel->postNewTransaksi($data) > 0) {
+            Flasher::setFlash('Berhasil', 'menambahkan pemasukan.', 'success');
+        } else {
+            Flasher::setFlash('Gagal', 'menambahkan pemasukan.', 'danger');
+        }
+    }
+
+    /**
+     * Menangani logika penambahan pengeluaran, termasuk pengecekan saldo.
+     */
+    private function handlePengeluaran($transaksiModel, $data)
+    {
+        $totals = $transaksiModel->getTransactionTotals();
+        $jumlahPengeluaran = abs($data['jumlah']);
+
+        if ($totals['total_saldo'] < $jumlahPengeluaran) {
+            Flasher::setFlash('Gagal', 'Saldo tidak mencukupi untuk pengeluaran ini.', 'danger');
+            return;
+        }
+
+        $data['jumlah'] = -$jumlahPengeluaran;
+        if ($transaksiModel->postNewTransaksi($data) > 0) {
+            Flasher::setFlash('Berhasil', 'menambahkan pengeluaran.', 'success');
+        } else {
+            Flasher::setFlash('Gagal', 'menambahkan pengeluaran.', 'danger');
+        }
     }
 }

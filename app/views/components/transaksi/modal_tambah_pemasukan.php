@@ -35,7 +35,7 @@
 
                     <div class="mb-3">
                         <label for="kategoriPemasukan" class="form-label">Kategori</p>
-                            <select class="form-select" id="kategoriPemasukan" name="kategori_id">
+                            <select class="form-select" id="kategoriPemasukan" name="kategori">
                                 <option value="" disabled selected>-- Pilih Kategori --</option>
                                 <option selected>Semua Kategori</option>
                                 <?php foreach ($semua_kategori as $kategori): ?>
